@@ -1,9 +1,11 @@
 package Agents;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -13,12 +15,11 @@ import jade.lang.acl.MessageTemplate;
 public class RA extends Agent {
     public int ID = -1;
     public int TeamID = -1;
-    public int LapNumber = -1;
-    public int LapID = 100;
     public int NumberOfLapsToGo = -1;
     public int CurrentLap = -1;
     public int NumOfTeamMembers = -1;
     public AID NextAgentAID;
+    public AID MasterAID;
     public boolean IsRunning = false;
 
 
@@ -89,6 +90,11 @@ public class RA extends Agent {
                     IsMessagedResponded = false;
 
                 }
+                if( ID == 0 && CurrentLap == NumberOfLapsToGo)
+                {
+                    IsRunning = false;
+                    addBehaviour(SendInfoAboutEnd);
+                }
 //                if(!IsFirstMessageResponded)
 //                {
 //                    ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
@@ -102,6 +108,18 @@ public class RA extends Agent {
             }
         }
     };
+
+    Behaviour SendInfoAboutEnd = new OneShotBehaviour() {
+        @Override
+        public void action() {
+            ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
+            msg.setOntology(ConfigFiles.LapsDoneInfo);
+            msg.addReceiver(MasterAID);
+            msg.setContent(Integer.toString(TeamID));
+            send(msg);
+        }
+    };
+
 
     Behaviour WaitForResponses = new CyclicBehaviour() {
         @Override
@@ -150,6 +168,7 @@ public class RA extends Agent {
         if ((NumOfTeamMembers == ID + 1))
             CurrentLap = 0;
         NextAgentAID = new AID(ConfigFiles.GetAgentAddress(nextAgentID, TeamID), AID.ISGUID);
+        MasterAID = new AID(ConfigFiles.GetMasterAddress(),AID.ISGUID);
         // todo shall i add address???
     }
 

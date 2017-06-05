@@ -2,15 +2,12 @@ import Agents.ConfigFiles;
 import Agents.InitiatorAgent;
 import Agents.Master;
 import Agents.RA;
-import jade.core.Location;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
-import jade.core.messaging.TopicManagementHelper;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import jade.wrapper.State;
 
 /**
  * Created by Mike on 04.06.2017.
@@ -61,7 +58,7 @@ public class JadeController {
 
     public void CreateAgentsByTeams()
     {
-        for( int i = 0; i < ConfigFiles.TeamNumber;i++)
+        for(int i = 0; i < ConfigFiles.NumberOfTeams; i++)
         {
             for( int j =0; j < ConfigFiles.TeamMembers; j++)
                 CreateAgent(j,i);
